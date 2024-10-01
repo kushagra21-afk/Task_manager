@@ -4,10 +4,11 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const cors= require("cors")
 const userRoute = require("./routes/user");
 const authRoute = require("./routes/auth");
 const postRoute = require("./routes/post");
-
+app.use(cors());
 dotenv.config({path: "./vars/.env"});
 
 mongoose.connect(
