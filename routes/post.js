@@ -1,57 +1,61 @@
 const router = require("express").Router();
-const Post = require("../models/Task");
+const Task = require("../models/Task");
 const User = require("../models/User");
+const verifyToken = require("../middleware/verify.token")
 const {createTaskSchema,updateTaskSchema}=require("../utils/validator")
-router.post("/", async (req, res) => {
+router.post("/",verifyToken, async (req, res) => {
   const { error } = createTaskSchema.validate(req.body);
   if (error) return res.status(400).json({ message: "Invalid input" });
-  const newPost = new Post(req.body);
+  else{const newTask = new Task({
+    ...req.body,
+  userId});
   try {
-    const savedPost = await newPost.save();
-    res.status(200).json(savedPost);
+    const savedTask = await newTask.save();
+    res.status(200).json(savedTask);
   } catch (err) {
     res.status(500).json(err);
-  }
+  }}
 });
-router.put("/:id", async (req, res) => {
+router.put("/:id", verifyToken , async (req, res) => {
   const { error } = updateTaskSchema.validate(req.body);
   if (error) return res.status(400).json({ message: "Invalid input" });
-  try {
-    const post = await Post.findById(req.params.id);
-    if (post.userId === req.body.userId) {
-      await post.updateOne({ $set: req.body });
-      res.status(200).json("the post has been updated");
-    } else {
-      res.status(403).json("you can update only your post");
-    }
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
-router.delete("/:id", async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (post.userId === req.body.userId) {
-      await post.deleteOne();
-      res.status(200).json("the post has been deleted");
-    } else {
-      res.status(403).json("you can delete only your post");
-    }
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
-router.get("/:id", async (req, res) => {
+  else{
     try {
-      const post = await Post.findById(req.params.id);
-      res.status(200).json(post);
+    const task = await Task.findById(req.params.id);
+    if (task.userId === req.user.userId) {
+      await task.updateOne({ $set: req.body });
+      res.status(200).json("the task has been updated");
+    } else {
+      res.status(403).json("you can update only your task");
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }}
+});
+router.delete("/:id",verifyToken, async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
+    if (task.userId === req.user.userId) {
+      await task.deleteOne();
+      res.status(200).json("the task has been deleted");
+    } else {
+      res.status(403).json("you can delete only your task");
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+router.get("/:id",verifyToken, async (req, res) => {
+    try {
+      const task = await Task.findById(req.params.id);
+      res.status(200).json(task);
     } catch (err) {
       res.status(500).json(err);
     }
   });
 router.get('/', verifyToken, async (req, res) => {
   try {
-    const tasks = await Task.find({userId: req.body.userId});
+    const tasks = await Task.find({userId: req.user.userId});
     res.status(200).json(tasks); 
   } catch (err) {
     res.status(500).json({ message: 'Error fetching tasks', error: err });
