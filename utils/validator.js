@@ -28,7 +28,10 @@ const createTaskSchema = Joi.object({
   .string()
   .required(),
 
-  priority: Joi.string().valid("Low", "Medium", "High")
+  priority: 
+  Joi
+  .string()
+  .valid("Low", "Medium", "High")
 });
 const updateTaskSchema = Joi.object({
     title: 

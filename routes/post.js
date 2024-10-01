@@ -6,9 +6,7 @@ const {createTaskSchema,updateTaskSchema}=require("../utils/validator")
 router.post("/",verifyToken, async (req, res) => {
   const { error } = createTaskSchema.validate(req.body);
   if (error) return res.status(400).json({ message: "Invalid input" });
-  else{const newTask = new Task({
-    ...req.body,
-  userId});
+  else{const newTask = new Task(req.body);
   try {
     const savedTask = await newTask.save();
     res.status(200).json(savedTask);
