@@ -20,7 +20,7 @@ router.put("/:id", verifyToken , async (req, res) => {
   else{
     try {
     const task = await Task.findById(req.params.id);
-    if (task.userId === req.user.userId) {
+    if (task.userId === req.user.id) {
       await task.updateOne({ $set: req.body });
       res.status(200).json("the task has been updated");
     } else {
@@ -33,7 +33,7 @@ router.put("/:id", verifyToken , async (req, res) => {
 router.delete("/:id",verifyToken, async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
-    if (task.userId === req.user.userId) {
+    if (task.userId === req.user.id) {
       await task.deleteOne();
       res.status(200).json("the task has been deleted");
     } else {
@@ -53,7 +53,7 @@ router.get("/:id",verifyToken, async (req, res) => {
   });
 router.get('/', verifyToken, async (req, res) => {
   try {
-    const tasks = await Task.find({userId: req.user.userId});
+    const tasks = await Task.find({userId: req.user.id});
     res.status(200).json(tasks); 
   } catch (err) {
     res.status(500).json({ message: 'Error fetching tasks', error: err });
