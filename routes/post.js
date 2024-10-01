@@ -51,7 +51,7 @@ router.get("/:id", async (req, res) => {
   });
 router.get('/', verifyToken, async (req, res) => {
   try {
-    const tasks = await Task.find();
+    const tasks = await Task.find({userId: req.body.userId});
     res.status(200).json(tasks); 
   } catch (err) {
     res.status(500).json({ message: 'Error fetching tasks', error: err });
