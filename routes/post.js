@@ -49,4 +49,12 @@ router.get("/:id", async (req, res) => {
       res.status(500).json(err);
     }
   });
+router.get('/', verifyToken, async (req, res) => {
+  try {
+    const tasks = await Task.find();
+    res.status(200).json(tasks); 
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching tasks', error: err });
+  }
+});
 module.exports = router;
