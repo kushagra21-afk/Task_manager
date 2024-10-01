@@ -23,11 +23,6 @@ const createTaskSchema = Joi.object({
   .string()
   .valid("To Do", "In Progress", "Completed"),
 
-  userId: 
-  Joi
-  .string()
-  .required(),
-
   priority: 
   Joi
   .string()
