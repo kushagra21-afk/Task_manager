@@ -3,10 +3,11 @@ const Task = require("../models/Task");
 const User = require("../models/User");
 const verifyToken = require("../middleware/verify.token")
 const {createTaskSchema,updateTaskSchema}=require("../utils/validator")
+
 router.post("/",verifyToken, async (req, res) => {
   const { error } = createTaskSchema.validate(req.body);
   if (error) return res.status(400).json({ message: "Invalid input" });
-  else{const newTask = new Task(req.body);
+  else{const newTask = new Task({...req.body, userId: req.user.id});
   try {
     const savedTask = await newTask.save();
     res.status(200).json(savedTask);
@@ -14,6 +15,7 @@ router.post("/",verifyToken, async (req, res) => {
     res.status(500).json(err);
   }}
 });
+
 router.put("/:id", verifyToken , async (req, res) => {
   const { error } = updateTaskSchema.validate(req.body);
   if (error) return res.status(400).json({ message: "Invalid input" });
@@ -30,6 +32,7 @@ router.put("/:id", verifyToken , async (req, res) => {
     res.status(500).json(err);
   }}
 });
+
 router.delete("/:id",verifyToken, async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
@@ -43,6 +46,7 @@ router.delete("/:id",verifyToken, async (req, res) => {
     res.status(500).json(err);
   }
 });
+
 router.get("/:id",verifyToken, async (req, res) => {
     try {
       const task = await Task.findById(req.params.id);
@@ -51,6 +55,7 @@ router.get("/:id",verifyToken, async (req, res) => {
       res.status(500).json(err);
     }
   });
+  
 router.get('/', verifyToken, async (req, res) => {
   try {
     const tasks = await Task.find({userId: req.user.id});
